@@ -417,7 +417,7 @@
         <input id="searchInput" class="search" type="text" placeholder="Station, Familie oder Straße suchen..." />
 
         <div class="quick-actions">
-          <button class="btn" onclick="showMeetingPoint()">📍 Infostelle anzeigen</button>
+          <button class="btn" onclick="showMeetingPoint()">📍 Infostelle </button>
           <button class="btn" onclick="showAll()">🗺️ Alle Stände</button>
         </div>
 
@@ -425,7 +425,7 @@
         <div id="standList" class="stand-list"></div>
 
         <div class="hint">
-          Die Standdaten kommen aus der Datei <strong>staende.csv</strong>. Neue Anmeldungen dort eintragen, hochladen, fertig.
+          Viel Spaß beim Dorfflohmarkt 2026 in Beinum!
         </div>
       </aside>
 
@@ -651,7 +651,7 @@
         : `Station ${stand.station}: ${stand.name}`;
 
       const instagram = stand.instagram
-        ? `<br><a class="instagram-link" href="${stand.instagram}" target="_blank" rel="noopener noreferrer">📸 Feuerwehr Beinum folgen</a>`
+        ? `<br><a class="instagram-link" href="${stand.instagram}" target="_blank" rel="noopener noreferrer">📸 ... und gerne der FF Beinum folgen :)</a>`
         : "";
 
       const info = stand.infoHtml
