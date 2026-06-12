@@ -1,8 +1,8 @@
 aktiv;id;station;typ;titel;name;strasse;hausnummer;plz;ort;kategorien;hinweis;lat;lng;instagram
-1;meeting;📍;meeting;INFOSTELLE Feuerwehr;Dorfgemeinschaft Beinum;Calbechter Weg;11;38259;Salzgitter-Beinum;Anmeldung|Kuchen|Grill|Getränke;<strong>INFOSTELLE der Dorfgemeinschaft Beinum</strong><br>Anmeldung / Info<br>🍰 Kuchenverkauf: 10:00–14:00 Uhr<br>🌭 Grill & Getränke: 10:00–16:00 Uhr;52.07420;10.41480;https://www.instagram.com/feuerwehr.beinum/reels/
-1;stand-1;1;stand;Lange Straße 3;;Lange Straße;3;38259;Salzgitter-Beinum;Verkaufsstelle;;52.07400;10.41400;
-1;stand-2;2;stand;Karlstraße 20;;Karlstraße;20;38259;Salzgitter-Beinum;Verkaufsstelle;;52.07465;10.41525;
-1;stand-3;3;stand;Lange Straße 22;;Lange Straße;22;38259;Salzgitter-Beinum;Verkaufsstelle;;52.07430;10.41610;
-1;stand-4;4;stand;Am Pfarrhaus 2;;Am Pfarrhaus;2;38259;Salzgitter-Beinum;Verkaufsstelle;;52.07365;10.41495;
-1;stand-5;5;stand;Ohedamm 10;;Ohedamm;10;38259;Salzgitter-Beinum;Verkaufsstelle;;52.07305;10.41600;
-1;stand-6;6;stand;Kehlenwiese 6;;Kehlenwiese;6;38259;Salzgitter-Beinum;Verkaufsstelle;;52.07510;10.41380;
+1;meeting;📍;meeting;INFOSTELLE Feuerwehr;Dorfgemeinschaft Beinum;Calbechter Weg;11;38259;Salzgitter-Beinum;Anmeldung|Kuchen|Grill|Getränke;<strong>INFOSTELLE der Dorfgemeinschaft Beinum</strong><br>Anmeldung / Info<br>🍰 Kuchenverkauf: 10:00–14:00 Uhr<br>🌭 Grill & Getränke: 10:00–16:00 Uhr;52.074200;10.414800;https://www.instagram.com/feuerwehr.beinum/reels/
+1;stand-1;1;stand;Fam. Braun;Fam. Braun;Lange Straße;3;38259;Salzgitter-Beinum;Verkaufsstelle;;52.074000;10.414000;
+1;stand-2;2;stand;Fam. Himstedt;Fam. Himstedt;Karlstraße;20;38259;Salzgitter-Beinum;Verkaufsstelle;;52.074650;10.415250;
+1;stand-3;3;stand;Lange Straße 22;;Lange Straße;22;38259;Salzgitter-Beinum;Verkaufsstelle;;52.074300;10.416100;
+1;stand-4;4;stand;Fam. Bühren;Fam. Bühren;Am Pfarrhaus;2;38259;Salzgitter-Beinum;Verkaufsstelle;;52.073650;10.414950;
+1;stand-5;5;stand;Fam. Matzkeit;Fam. Matzkeit;Ohedamm;10;38259;Salzgitter-Beinum;Verkaufsstelle;;52.073050;10.416000;
+1;stand-6;6;stand;Fam. Baars;Fam. Baars;Kehlenwiese;6;38259;Salzgitter-Beinum;Verkaufsstelle;;52.075100;10.413800;
