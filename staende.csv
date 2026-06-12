@@ -1,0 +1,8 @@
+﻿aktiv;id;station;typ;titel;name;strasse;hausnummer;plz;ort;kategorien;hinweis;lat;lng;instagram
+1;meeting;📍;meeting;INFOSTELLE Feuerwehr;Dorfgemeinschaft Beinum;Calbechter Weg;11;38259;Salzgitter-Beinum;Anmeldung|Kuchen|Grill|Getränke;<strong>INFOSTELLE der Dorfgemeinschaft Beinum</strong><br>Anmeldung / Info<br>🍰 Kuchenverkauf: 10:00–14:00 Uhr<br>🌭 Grill & Getränke: 10:00–16:00 Uhr;5.207.420;1.041.480;https://www.instagram.com/feuerwehr.beinum/reels/
+1;stand-1;1;stand;Fam. Braun;Fam. Braun;Lange Straße;3;38259;Salzgitter-Beinum;Verkaufsstelle;;5.207.400;1.041.400;
+1;stand-2;2;stand;Fam. XY;Fam. XY;Karlstraße;20;38259;Salzgitter-Beinum;Verkaufsstelle;;5.207.465;1.041.525;
+1;stand-3;3;stand;Lange Straße 22;;Lange Straße;22;38259;Salzgitter-Beinum;Verkaufsstelle;;5.207.430;1.041.610;
+1;stand-4;4;stand;Fam. Bühren;Fam. 123;Am Pfarrhaus;2;38259;Salzgitter-Beinum;Verkaufsstelle;;5.207.365;1.041.495;
+1;stand-5;5;stand;Ohedamm 10;Fam. ABC;Ohedamm;10;38259;Salzgitter-Beinum;Verkaufsstelle;;5.207.305;1.041.600;
+1;stand-6;6;stand;Kehlenwiese 6;Fam. DEF;Kehlenwiese;6;38259;Salzgitter-Beinum;Verkaufsstelle;;5.207.510;1.041.380;
