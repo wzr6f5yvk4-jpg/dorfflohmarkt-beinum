@@ -104,7 +104,7 @@
 
     .layout {
       display: grid;
-      grid-template-columns: 360px 1fr;
+      grid-template-columns: 1fr;
       gap: 14px;
       align-items: start;
     }
@@ -141,9 +141,9 @@
 
     .quick-actions {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 8px;
-      margin-bottom: 10px;
+      margin-bottom: 0;
     }
 
     .btn {
@@ -157,12 +157,7 @@
     }
 
     .stand-list {
-      display: flex;
-      flex-direction: column;
-      gap: 9px;
-      max-height: 580px;
-      overflow: auto;
-      padding-right: 3px;
+      display: none;
     }
 
     .stand-card {
@@ -249,7 +244,8 @@
     }
 
     #map {
-      height: 680px;
+      height: calc(100vh - 245px);
+      min-height: 620px;
       width: 100%;
       border-radius: 20px;
       border: 1px solid var(--border);
@@ -371,6 +367,27 @@
     }
 
 
+
+
+    .list-panel {
+      padding-bottom: 14px;
+    }
+
+    .list-panel .panel-title,
+    .list-panel .search {
+      display: none;
+    }
+
+    @media (max-width: 560px) {
+      .quick-actions {
+        gap: 7px;
+      }
+
+      .btn {
+        padding: 10px 6px;
+        font-size: 13px;
+      }
+    }
 
     .user-location-marker {
       position: relative;
@@ -511,16 +528,22 @@
       }
       .hero-logo { width: 72px; height: 72px; }
       .layout { grid-template-columns: 1fr; }
-      #map { height: 520px; }
-      .stand-list { max-height: 330px; }
-      .quick-actions { grid-template-columns: 1fr; }
+      #map {
+        height: calc(100vh - 255px);
+        min-height: 520px;
+      }
+      .stand-list { display: none; }
+      .quick-actions { grid-template-columns: 1fr 1fr; }
     }
 
     @media (max-width: 560px) {
       .hero { grid-template-columns: 1fr; }
       .hero-logo { width: 78px; height: 78px; }
       .status-pill { font-size: 12px; }
-      #map { height: 470px; }
+      #map {
+        height: calc(100vh - 285px);
+        min-height: 470px;
+      }
     }
   </style>
 </head>
@@ -542,7 +565,7 @@
     </section>
 
     <div class="layout">
-      <aside class="panel">
+      <aside class="panel list-panel">
         <h2 class="panel-title">Standübersicht</h2>
 
         <input id="searchInput" class="search" type="text" placeholder="Stand, Straße oder Nummer suchen..." />
@@ -1019,6 +1042,7 @@
 
     function renderList(filter = "") {
       const list = document.getElementById("standList");
+      if (!list) return;
       list.innerHTML = "";
 
       const f = normalize(filter);
