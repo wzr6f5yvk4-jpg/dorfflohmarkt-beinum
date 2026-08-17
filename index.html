@@ -608,8 +608,8 @@
       notes[standId] = value;
       if (!value.trim()) delete notes[standId];
       saveJson(NOTE_STORAGE_KEY, notes);
-      renderList(document.getElementById("searchInput").value);
-      refreshMarkers();
+      // Nicht renderList() oder refreshMarkers() aufrufen:
+      // Sonst wird das Textfeld bei jedem Buchstaben neu erzeugt und verliert den Fokus.
     }
 
     function toggleFavorite(standId) {
