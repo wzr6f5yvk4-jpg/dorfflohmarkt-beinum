@@ -371,6 +371,37 @@
     }
 
 
+
+    .user-location-marker {
+      position: relative;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #1976d2;
+      border: 4px solid white;
+      box-shadow: 0 3px 12px rgba(0,0,0,.35);
+    }
+
+    .user-location-marker::after {
+      content: "";
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      border: 2px solid rgba(25,118,210,.35);
+      animation: locationPulse 1.8s ease-out infinite;
+    }
+
+    @keyframes locationPulse {
+      0% {
+        transform: scale(.45);
+        opacity: .9;
+      }
+      100% {
+        transform: scale(1.8);
+        opacity: 0;
+      }
+    }
+
     .stand-card.favorite {
       border: 2px solid var(--gold);
       background: linear-gradient(135deg, #fff8dc, #fffdf7);
@@ -520,6 +551,7 @@
           <button class="btn" onclick="setFilter('all')">🗺️ Alle Stände</button>
           <button class="btn" onclick="setFilter('favorites')">★ Gemerkt</button>
           <button class="btn" onclick="showMeetingPoint()">📍 Infostelle</button>
+          <button class="btn" onclick="showUserLocation()">📡 Mein Standort</button>
           <button class="btn" onclick="showAll()">Karte zentrieren</button>
         </div>
 
@@ -543,6 +575,8 @@
     const markers = {};
     let map;
     let currentFilter = "all";
+    let userLocationMarker = null;
+    let userAccuracyCircle = null;
 
     const STORAGE_KEY = "dorfflohmarkt_beinum_favorites_v1";
     const NOTE_STORAGE_KEY = "dorfflohmarkt_beinum_notes_v1";
@@ -1053,6 +1087,77 @@
     function showMeetingPoint() {
       const meeting = stands.find(s => s.type === "meeting");
       if (meeting) focusStand(meeting);
+    }
+
+    function showUserLocation() {
+      if (!navigator.geolocation) {
+        showError("Dein Browser unterstützt keine Standortanzeige.");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          const accuracy = position.coords.accuracy || 0;
+
+          const userIcon = L.divIcon({
+            className: "custom-user-location",
+            html: `<div class="user-location-marker"></div>`,
+            iconSize: [22, 22],
+            iconAnchor: [11, 11],
+            popupAnchor: [0, -12]
+          });
+
+          if (!userLocationMarker) {
+            userLocationMarker = L.marker([lat, lng], {
+              icon: userIcon,
+              zIndexOffset: 2000
+            }).addTo(map);
+          } else {
+            userLocationMarker.setLatLng([lat, lng]);
+          }
+
+          userLocationMarker.bindPopup(`
+            <div class="popup-title">📡 Dein Standort</div>
+            <div class="popup-address">Genauigkeit ca. ${Math.round(accuracy)} m</div>
+          `);
+
+          if (userAccuracyCircle) {
+            userAccuracyCircle.setLatLng([lat, lng]);
+            userAccuracyCircle.setRadius(accuracy);
+          } else {
+            userAccuracyCircle = L.circle([lat, lng], {
+              radius: accuracy,
+              color: "#1976d2",
+              fillColor: "#1976d2",
+              fillOpacity: 0.08,
+              weight: 1
+            }).addTo(map);
+          }
+
+          map.setView([lat, lng], 18, { animate: true });
+          userLocationMarker.openPopup();
+        },
+        error => {
+          let message = "Standort konnte nicht ermittelt werden.";
+
+          if (error.code === error.PERMISSION_DENIED) {
+            message = "Standortfreigabe wurde blockiert. Bitte im Browser/Handy erlauben.";
+          } else if (error.code === error.POSITION_UNAVAILABLE) {
+            message = "Standort ist aktuell nicht verfügbar.";
+          } else if (error.code === error.TIMEOUT) {
+            message = "Standortabfrage hat zu lange gedauert. Bitte nochmal versuchen.";
+          }
+
+          showError(message);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 30000
+        }
+      );
     }
 
     function showAll() {
