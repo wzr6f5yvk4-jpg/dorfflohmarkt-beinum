@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dorfflohmarkt Beinum – Koordinaten-Export</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #f3efe4;
+      --paper: #fffdf7;
+      --green: #2f8f3a;
+      --green-dark: #1d5724;
+      --gold: #c9933a;
+      --text: #222;
+      --muted: #666;
+      --border: #dfd5c2;
+      --shadow: 0 10px 24px rgba(0,0,0,.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 18px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+    .wrap { max-width: 920px; margin: 0 auto; }
+    .hero {
+      background: linear-gradient(135deg, #151515, #1d5724 58%, #c9933a);
+      color: white;
+      border-radius: 24px;
+      padding: 22px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.02;
+      letter-spacing: -0.035em;
+    }
+    .hero p { margin: 0; font-size: 16px; opacity: .96; line-height: 1.4; }
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+    button {
+      border: 1px solid var(--border);
+      background: #fffdf8;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-weight: 900;
+      cursor: pointer;
+      color: var(--text);
+      font-size: 15px;
+      margin: 0 8px 8px 0;
+    }
+    button.primary {
+      background: var(--green);
+      color: white;
+      border-color: var(--green-dark);
+    }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .log {
+      background: #151515;
+      color: #e8e8e8;
+      border-radius: 16px;
+      padding: 14px;
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      max-height: 430px;
+      overflow: auto;
+    }
+    .hint { color: var(--muted); line-height: 1.45; margin-top: 12px; }
+    textarea {
+      width: 100%;
+      min-height: 260px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      line-height: 1.4;
+      resize: vertical;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Koordinaten-Export</h1>
+      <p>Dieses Hilfstool lädt deine aktuelle <strong>staende.csv</strong>, ermittelt einmalig fehlende Koordinaten und erzeugt daraus eine fertige CSV für den Live-Betrieb.</p>
+    </section>
+
+    <section class="panel">
+      <button id="startBtn" class="primary" onclick="startExport()">Koordinaten ermitteln & CSV erzeugen</button>
+      <button id="downloadBtn" disabled onclick="downloadCsv()">staende.csv herunterladen</button>
+      <div class="hint">
+        Danach die heruntergeladene <strong>staende.csv</strong> in GitHub ersetzen und anschließend die finale <strong>index.html</strong> nutzen.
+        So müssen Besucher später nicht mehr live geocoden.
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Status</h2>
+      <div id="log" class="log">Bereit.</div>
+    </section>
+
+    <section class="panel">
+      <h2>Vorschau der erzeugten CSV</h2>
+      <textarea id="csvPreview" readonly placeholder="Hier erscheint nach dem Export die fertige CSV..."></textarea>
+    </section>
+  </div>
+
+  <script>
+    let generatedCsv = "";
+
+    function log(message, type = "") {
+      const box = document.getElementById("log");
+      const prefix = type ? "[" + type.toUpperCase() + "] " : "";
+      box.textContent += "\n" + prefix + message;
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function parseCsv(text) {
+      const rows = [];
+      let row = [];
+      let value = "";
+      let insideQuotes = false;
+
+      text = text.replace(/^\uFEFF/, "");
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const nextChar = text[i + 1];
+
+        if (char === '"' && insideQuotes && nextChar === '"') {
+          value += '"';
+          i++;
+        } else if (char === '"') {
+          insideQuotes = !insideQuotes;
+        } else if (char === ";" && !insideQuotes) {
+          row.push(value);
+          value = "";
+        } else if ((char === "\n" || char === "\r") && !insideQuotes) {
+          if (char === "\r" && nextChar === "\n") i++;
+          row.push(value);
+          if (row.some(cell => cell.trim() !== "")) rows.push(row);
+          row = [];
+          value = "";
+        } else {
+          value += char;
+        }
+      }
+
+      if (value || row.length) {
+        row.push(value);
+        if (row.some(cell => cell.trim() !== "")) rows.push(row);
+      }
+
+      if (!rows.length) return { headers: [], records: [] };
+
+      const headers = rows[0].map(header => header.trim());
+      const records = rows.slice(1).map(row => {
+        const item = {};
+        headers.forEach((header, index) => {
+          item[header] = (row[index] || "").trim();
+        });
+        return item;
+      });
+
+      return { headers, records };
+    }
+
+    function csvEscape(value) {
+      value = String(value ?? "");
+      if (value.includes(";") || value.includes("\n") || value.includes("\r") || value.includes('"')) {
+        return '"' + value.replaceAll('"', '""') + '"';
+      }
+      return value;
+    }
+
+    function toCsv(headers, records) {
+      return [
+        headers.join(";"),
+        ...records.map(record => headers.map(header => csvEscape(record[header] || "")).join(";"))
+      ].join("\n") + "\n";
+    }
+
+    function parseCoordinate(value) {
+      value = String(value || "").trim().replace(",", ".");
+      const number = Number(value);
+      return Number.isFinite(number) ? number : NaN;
+    }
+
+    function hasValidCoordinates(record) {
+      const lat = parseCoordinate(record.lat);
+      const lng = parseCoordinate(record.lng);
+      return Number.isFinite(lat) && Number.isFinite(lng)
+        && lat > 51 && lat < 53
+        && lng > 9 && lng < 12;
+    }
+
+    function getAddress(record) {
+      return `${record.strasse || ""} ${record.hausnummer || ""}, ${record.plz || "38259"} ${record.ort || "Salzgitter-Beinum"}, Deutschland`.replace(/\s+/g, " ").trim();
+    }
+
+    async function geocodeRecord(record) {
+      const address = getAddress(record);
+      const cacheKey = "dfm_geo_" + (record.id || record.station || "") + "_" + address;
+
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        try {
+          const pos = JSON.parse(cached);
+          if (Number.isFinite(pos.lat) && Number.isFinite(pos.lng)) {
+            return { lat: pos.lat, lng: pos.lng, source: "cache" };
+          }
+        } catch (_) {}
+      }
+
+      const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=de&q=${encodeURIComponent(address)}`;
+      const response = await fetch(url, {
+        headers: { "Accept": "application/json", "Accept-Language": "de" }
+      });
+
+      if (!response.ok) throw new Error("HTTP " + response.status);
+
+      const results = await response.json();
+      if (!results || !results.length) throw new Error("Keine Treffer");
+
+      const pos = {
+        lat: parseFloat(results[0].lat),
+        lng: parseFloat(results[0].lon)
+      };
+
+      if (!Number.isFinite(pos.lat) || !Number.isFinite(pos.lng)) {
+        throw new Error("Ungültige Koordinaten");
+      }
+
+      localStorage.setItem(cacheKey, JSON.stringify({ lat: pos.lat, lng: pos.lng }));
+      return { lat: pos.lat, lng: pos.lng, source: "geocode" };
+    }
+
+    async function startExport() {
+      const startBtn = document.getElementById("startBtn");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const logBox = document.getElementById("log");
+
+      startBtn.disabled = true;
+      downloadBtn.disabled = true;
+      generatedCsv = "";
+      logBox.textContent = "Lade staende.csv ...";
+
+      try {
+        const response = await fetch("staende.csv?cache=" + Date.now());
+        if (!response.ok) throw new Error("staende.csv konnte nicht geladen werden.");
+
+        const csvText = await response.text();
+        const parsed = parseCsv(csvText);
+
+        if (!parsed.headers.includes("lat") || !parsed.headers.includes("lng")) {
+          throw new Error("Spalten lat/lng fehlen in der CSV.");
+        }
+
+        const activeRecords = parsed.records.filter(record => record.aktiv !== "0");
+        log(activeRecords.length + " aktive Einträge gefunden.");
+
+        for (const record of parsed.records) {
+          if (record.aktiv === "0") continue;
+
+          if (hasValidCoordinates(record)) {
+            log((record.station || record.id) + ": Koordinaten bereits vorhanden.");
+            continue;
+          }
+
+          const title = record.typ === "meeting" ? "INFOSTELLE" : "Stand " + record.station;
+          log(title + ": " + getAddress(record));
+
+          try {
+            const pos = await geocodeRecord(record);
+            record.lat = pos.lat.toFixed(6);
+            record.lng = pos.lng.toFixed(6);
+            log(title + ": " + record.lat + ", " + record.lng + " (" + pos.source + ")", "ok");
+
+            if (pos.source === "geocode") {
+              await new Promise(resolve => setTimeout(resolve, 1100));
+            }
+          } catch (error) {
+            log(title + ": FEHLER – " + error.message, "bad");
+          }
+        }
+
+        generatedCsv = toCsv(parsed.headers, parsed.records);
+        document.getElementById("csvPreview").value = generatedCsv;
+
+        const missing = parsed.records
+          .filter(record => record.aktiv !== "0")
+          .filter(record => !hasValidCoordinates(record));
+
+        if (missing.length) {
+          log(missing.length + " aktive Einträge haben noch keine gültigen Koordinaten. Bitte prüfen.", "warn");
+        } else {
+          log("Fertig. Alle aktiven Einträge haben gültige Koordinaten.", "ok");
+          downloadBtn.disabled = false;
+        }
+      } catch (error) {
+        log("Abbruch: " + error.message, "bad");
+      } finally {
+        startBtn.disabled = false;
+      }
+    }
+
+    function downloadCsv() {
+      if (!generatedCsv) return;
+
+      const blob = new Blob([generatedCsv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+
+      a.href = url;
+      a.download = "staende.csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
