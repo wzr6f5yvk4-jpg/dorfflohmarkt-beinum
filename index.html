@@ -560,7 +560,7 @@
           <div class="status-pill">🍰 Kuchen: 10:00–16:00 Uhr</div>
           <div class="status-pill">🌭 Grill & Getränke: 10:00–16:00 Uhr</div>
           <div class="status-pill">🚻 Toiletten: Feuerwehr Beinum</div>
-          <div class="status-pill">📍 INFOSTELLE: Feuerwehr Beinum</div>
+          <div class="status-pill">📍 INFO: Feuerwehr Beinum</div>
         </div>
       </div>
     </section>
@@ -572,7 +572,7 @@
         <input id="searchInput" class="search" type="text" placeholder="Stand, Straße oder Nummer suchen..." />
 
         <div class="quick-actions">
-          <button class="btn" onclick="showMeetingPoint()">📍 Infostelle</button>
+          <button class="btn" onclick="showMeetingPoint()">📍 Info</button>
           <button class="btn" onclick="showUserLocation()">📡 Mein Standort</button>
           <button class="btn" onclick="showAll()">Karte zentrieren</button>
         </div>
@@ -893,7 +893,7 @@
       if (stand.type === "meeting") {
         return L.divIcon({
           className: "custom-meeting-marker",
-          html: `<div class="meeting-marker">📍 INFOSTELLE</div>`,
+          html: `<div class="meeting-marker">📍 INFO</div>`,
           iconSize: [142, 60],
           iconAnchor: [71, 60],
           popupAnchor: [0, -58]
